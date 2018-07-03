@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
+
 # Create your models here.
 
 
@@ -13,6 +14,8 @@ class Base(models.Model):
 
 class BaseNews(Base):
     description = models.CharField(max_length=200)
+    image = models.ImageField(upload_to='Django_news/news/media/photos',
+                              blank=True, null=True)
 
     def __str__(self):
         return self.title
