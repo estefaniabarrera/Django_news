@@ -1,0 +1,62 @@
+{% load staticfiles %}
+<html>
+<head>
+    <title>News</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <link href="http://fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/news.css' %}">
+</head>
+<body>
+<div class="page-header">
+    <a href="{% url 'v1NewsAdd' %}" class="top-menu"><span class="glyphicon glyphicon-plus">NewsV1</span></a>
+    <a href="{% url 'addNews' %}" class="top-menu"><span class="glyphicon glyphicon-plus">NewsV2</span></a>
+    <h1>News</h1>
+</div>
+
+<form action="{% url 'search' %}" method="get">
+<div class="form-group">
+<div class="col-xs-4">
+    <input type="text" class="form-control" name="q" placeholder="News" />
+{#    <input type="date" class="form-control " name = "fecha" />#}
+</div>
+    <button type="submit" class="btn btn-primary">Search</button>
+</div>
+
+<div>
+    <p>
+        <a href="{% url 'index' %}"><span class="glyphicon glyphicon-hand-left">Return</span></a>
+    </p>
+</div>
+
+{% for news in NewsItem %}
+    <div>
+        <h1><a href="{% url 'detailNews' news.id %}">{{ news.title }}</a></h1>
+        <p>{{ news.description }}</p>
+        <p>Publication: {{ news.publish_date }}</p>
+ <p>     {% if news.image %}
+            <img src="{{ news.image.url }}">
+        {% endif %}
+ </p>
+    </div>
+{% endfor %}
+
+  <div class="pagination">
+    <span class="step-links">
+        {% if NewsItem.has_previous %}
+            <a href="?page={{ NewsItem.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ NewsItem.number }} of {{ NewsItem.paginator.num_pages }}.
+        </span>
+
+        {% if NewsItem.has_next %}
+            <a href="?page={{ NewsItem.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">next</a>
+
+
+        {% endif %}
+    </span>
+</div>
+</body>
+</html>

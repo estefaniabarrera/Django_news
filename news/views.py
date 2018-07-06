@@ -1,16 +1,12 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.shortcuts import render, redirect, get_object_or_404
-
 # Create your views here.
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import DetailView, CreateView, UpdateView, DeleteView, ListView
+from django.views.generic import DetailView, CreateView, UpdateView, DeleteView
 
-from news.forms import NewsForm, EventForm
+from news.forms import NewsForm, EventForm, CommentForm
 from news.models import NewsItem, Event
-
-from search_views.search import SearchListView
-from search_views.filters import BaseFilter
 
 
 def index(request):
@@ -58,19 +54,25 @@ def news_list(request):
 
 
 def event_list(request):
-    event = Event.objects.all().order_by('start_date')
-    paginator_events = Paginator(event, 10)
-    page = request.GET.get('page')
-    try:
-        event = paginator_events.page(page)
-    except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
-        event = paginator_events.page(1)
-    except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
-        event = paginator_events.page(paginator_events.num_pages)
+    import ipdb; ipdb.set_trace()
+    if request.GET.get('q'):
+        import ipdb; ipdb.set_trace()
+        search(request)
+    else:
+        event = Event.objects.all().order_by('start_date')
+        paginator_events = Paginator(event, 10)
+        page = request.GET.get('page')
 
-    return render(request, 'news/event_list.html', {'Event': event})
+        try:
+            event = paginator_events.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            event = paginator_events.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+           event = paginator_events.page(paginator_events.num_pages)
+
+        return render(request, 'news/event_list.html', {'Event': event})
 
 
 # NEWS V1
@@ -166,19 +168,73 @@ class EventDetail(DetailView):
     template_name = 'news/event_detail.html'
 
 
-#SEARCH
-class NewsFilter(BaseFilter):
-    search_fields = {
-        'search_text' : ['name', 'surname'],
-        'search_age_exact' : { 'operator' : '__exact', 'fields' : ['age'] },
-        'search_age_min' : { 'operator' : '__gte', 'fields' : ['age'] },
-        'search_age_max' : { 'operator' : '__lte', 'fields' : ['age'] },
+# SEARCH
 
-    }
+# def search_form(request):
+#     return render(request, 'news/event_search_form.html')
+#
+#
+# def search(request):
+#     error = False
+#     if 'q' in request.GET:
+#         q = request.GET['q']
+#         if not q:
+#             error = True
+#         else:
+#             events = Event.objects.filter(title__contains=q)
+#             return render(request, 'news/search_results.html', {'events': events, 'query': q})
+#     return render(request, 'news/event_search_form.html', {'error': error})
 
-class ActorsSearchList(SearchListView):
-    model = Actor
-    paginate_by = 30
-    template_name = "actors/actors_list.html"
-    form_class = ActorSearchForm
-    filter_class = ActorsFilter
+def search(request):
+    q = request.GET.get('q', '')
+    # import ipdb;
+    # ipdb.set_trace()
+    news = NewsItem.objects.filter(title__contains=q).order_by('publish_date')
+    paginator_news = Paginator(news, 2)
+    page = request.GET.get('page')
+    try:
+        news = paginator_news.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        news = paginator_news.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        news = paginator_news.page(paginator_news.num_pages)
+
+    return render(request, 'news/news_list.html', {'NewsItem': news})
+
+
+# COMMENT BY NEWS
+
+def add_comment_to_post(request, pk, template_name='news/add_comment_to_post.html'):
+    # import ipdb;
+    # ipdb.set_trace()
+    news = get_object_or_404(NewsItem, pk=pk)
+    form = CommentForm(request.POST or None)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.newItem = news
+        comment.save()
+        return redirect('detailNews', pk=news.pk)
+    else:
+        form = CommentForm()
+    return render(request, template_name, {'form': form})
+
+
+# def vote_comment(request, comment_pk, vote):
+#     try:
+#         user = request.user
+#         comment = Comment.objects.get(pk=comment_pk)
+#         # news_pk = comment.news.id
+#         votes = Vote.objects.filter(user=user, comment=comment)
+#         if votes:
+#             vote = votes[0]
+#             vote.comment = comment
+#             vote.vote = vote
+#             vote.save()
+#         else:
+#             vote = Vote(user=user, comment=comment, vote=vote)
+#             vote.save()
+#         return redirect('news')
+#     except(IntegrityError):
+#         return redirect('index')

@@ -1,0 +1,80 @@
+{% load staticfiles %}
+<html>
+<head>
+  <title>News</title>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+  <link href="http://fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="{% static 'css/news.css' %}">
+</head>
+<body>
+  <div class="page-header">
+      <h1><a href="/">News and Events</a></h1>
+  </div>
+  <div>
+    <p>
+        <a href="{% url 'index' %}"><span class="glyphicon glyphicon-hand-left">Return</span></a>
+    </p>
+</div>
+
+   {% for news in NewsItem %}
+       <div>
+           <h1><a href="{% url 'detailNews' news.id %}">{{ news.title }}</a></h1>
+           <p>{{ news.description}}</p>
+           <p>Publication of the news: {{ news.publish_date }}</p>
+        <p>     {% if event.image %}
+            <img src="{{ news.image.url }}">
+        {% endif %}
+ </p>
+       </div>
+   {% endfor %}
+
+  <div class="pagination">
+    <span class="step-links">
+        {% if NewsItem.has_previous %}
+            <a href="?page={{ NewsItem.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ NewsItem.number }} of {{ NewsItem.paginator.num_pages }}.
+        </span>
+
+        {% if NewsItem.has_next %}
+            <a href="?page={{ NewsItem.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+
+
+
+   {% for event in Event %}
+       <div>
+           <h1><a href="{% url 'detailEvent' event.id %}">{{ event.title }}</a></h1>
+           <p>{{ event.description}}</p>
+          <p>Start of event: {{ event.start_date }}</p>
+        <p>End of event: {{ event.start_date }}</p>
+        <p>     {% if event.image %}
+            <img src="{{ event.image.url }}">
+        {% endif %}
+ </p>
+       </div>
+   {% endfor %}
+
+  <div class="pagination">
+    <span class="step-links">
+        {% if Event.has_previous %}
+            <a href="?page={{ Event.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ Event.number }} of {{ Event.paginator.num_pages }}.
+        </span>
+
+        {% if Event.has_next %}
+            <a href="?page={{ Event.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+  <link href="http://fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="{% static 'css/news.css' %}">
+</head>
+<body>
+<div class="page-header">
+      <h1><a href="/">Search event</a></h1>
+  </div>
+<div>
+<p>You searched for: <strong>{{ query }}</strong></p>
+
+{% if events %}
+    <p>Found {{ events|length }} book{{ events|pluralize }}.</p>
+    <ul>
+        {% for event in events %}
+            <li>{{ event.title }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>No events matched your search criteria.</p>
+{% endif %}
+</div>
+</body>
+</html>

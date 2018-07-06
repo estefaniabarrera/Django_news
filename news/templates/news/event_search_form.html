@@ -1,0 +1,26 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+  <link href="http://fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="{% static 'css/news.css' %}">
+</head>
+<body>
+<div class="page-header">
+      <h1><a href="/">Search event</a></h1>
+  </div>
+<div>
+{% if error %}
+    <p style="color: red;">Please submit a search term.</p>
+{% endif %}
+<form action="search" method="get">
+    <input type="text" name="q">
+    <input type="submit" value="Search" name="search">
+</form>
+</div>
+</body>
+</html>

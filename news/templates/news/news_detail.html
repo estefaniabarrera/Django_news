@@ -1,0 +1,41 @@
+{% load staticfiles %}
+<html>
+<head>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="{% static 'css/news.css' %}">
+</head>
+<p>
+  <div class="page-header">
+     <a href="{% url 'editNews' newsitem.id %}" class="top-menu"><span class="glyphicon glyphicon-edit">Edit</span></a>
+      <a href="{% url 'deleteNews' newsitem.id %}" class="top-menu"><span class="glyphicon glyphicon-trash">Delete</span></a>
+     <a href="{% url 'v1EditNews' newsitem.id %}" class="top-menu"><span class="glyphicon glyphicon-edit">EditV1</span></a>
+    <a href="{% url 'v1DeleteNews' newsitem.id %}" class="top-menu"><span class="glyphicon glyphicon-trash">DeleteV1</span></a>
+    <h1>{{ newsitem.title }}</h1>
+
+  </div>
+  <div>
+    <p>
+        <a href="{% url 'news' %}"><span class="glyphicon glyphicon-hand-left">Return</span></a>
+    </p>
+</div>
+<p>Description: <i>{{ newsitem.description }}</i></p>
+<p>Date of publication: <i>{{ newsitem.publish_date }}</i></p>
+ <p>     {% if news.image %}
+            <img src="{{ news.image.url }}">
+        {% endif %}
+ </p>
+{#  <p></p><a href="{% url 'post_detail' pk=post.pk %}">Comments: {{ post.comments.count }}</a></p>#}
+<a class="btn btn-default" href="{% url 'add_comment_to_post' pk=newsitem.id %}">Add comment</a>
+<hr>
+{% for comment in newsitem.comments.all %}
+    <div class="comment">
+        <div class="date">{{ comment.created_date }}</div>
+        <strong>{{ comment.author }}</strong>
+        <p>{{ comment.text|linebreaks }}</p>
+    </div>
+{% empty %}
+    <p>No comments here yet :(</p>
+{% endfor %}
+</body>
+</html>
